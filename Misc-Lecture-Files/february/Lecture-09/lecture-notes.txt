@@ -1,0 +1,68 @@
+Lambda functions
+
+The key function of sorted() is usually quite simple, and can be expressed
+as a simple expression.  For example
+
+    def kf(x): 
+        (x[1], x[0])
+
+which sorts by swapping the first two elements of the items being sorted.
+It could be a list of tuples, or a list of lists of length at least 2.
+
+Instead of writing
+    sorted(l, key=kf)
+we can create an anonymous function directly, and use that as the key
+function:
+    sorted(l, key= lambda x: (x[1], x[0]) )
+
+
+Back to Dijkstra's algorithm.
+
+What happens with 
+    cost = 0
+    cost = -1
+
+Let's profile to see where we are spending time.  Generate a random
+digraph:
+    num_vertices = 300
+    num_edges = 1000
+
+It's in the part that finds the next event to handle, that is finds an
+event the minimum arrival time.
+
+Notice how long the event queue gets, O(E)
+
+So although we are looking at O(E) edges, each look is costing us about
+O(E) time.  So we have this O(E^2) algorithm.
+
+Min Heaps 
+
+We need a data structure that let's us quickly add an event, and to 
+extract out one with minimum arrival time.  Such a data structure can
+be created by using the root of the tree to contain the miniumum
+element, and then recursively satisfying
+    value at root = min ( value at left, value at right )
+
+The only issue is when we remove the min, we need to rebalane the tree,
+which means we need to shift the rightmst element somewhere.
+
+So we put it into the root position, and then move it down and rebalace
+as you go.
+
+Animation:
+    https://www.cs.usfca.edu/~galles/JavascriptVisual/Heap.html
+
+
+
+Now, can we compactly represent a left most balanced tree by assigning
+the vertices to positions in an array.  Lets try numbering the vertices
+as if we are doing a left to right dfs traversal of an infinite tree.
+
+If you are at vertex v, then the 
+    left child is 2v + 1
+    right child is 2v + 2
+and your parent is
+    (v-1) // 2
+
+So we don't need a full graph or tree data structure.  We can use an 
+array instead.

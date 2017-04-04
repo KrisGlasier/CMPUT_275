@@ -1,0 +1,21 @@
+digraph {
+list [label="Expression tree for ( (1+2) * (3+4) )", shape=box];
+r [label="*"];
+f [label="+"];
+t [label="+"];
+
+ff [label="1"];
+ft [label="2"];
+
+tf [label="3"];
+tt [label="4"];
+
+r -> f ;
+r -> t ;
+
+f -> ff ;
+f -> ft ;
+
+t -> tf ;
+t -> tt ;
+}

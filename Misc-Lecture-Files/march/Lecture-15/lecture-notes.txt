@@ -1,0 +1,195 @@
+How to read a program.
+
+How do you approach reading and understanding a program?  
+
+Why do you need to read a program?
+- if you need to fix it
+- if you need to extend it
+- if you need to reuse parts of it for another program
+- if you want to do it properly this time
+
+When you read a program you are building a mental model of
+- the behaviour of the program and the potential states it can be in
+- the structure or design of the program, this is, its parts and how
+they are connected.
+
+Many different structures can lead to the same behaviour.  The quality
+of the structure affects how easy it is to understand a program. And this
+affects your confidence that you understand the program's behaviour.
+
+There is a systematic way to approach reading a program.  It's an iterative
+process.  When reading you can have these modes:
+    broad and shallow vs narrow and deep
+    structure vs behaviour
+    design vs as-built 
+This is an iterative process that builds an increasingly more detailed
+mental model.  At some point, you decide that your mental model is appropriate
+to for the task at hand.
+
+Broad and shallow = look at a number of things that interacts, but don't
+    go too deeply into details.  For example, what are the main services
+    that are required, and possibly implemented, in the program.
+
+Narrow and deep = look at 1 or 2 things, delving deeply into their details.
+
+Structure - what are the components and how they are inter-connected.
+    Who calls who?  What are data structures composed of?  What classes
+    are derived from other classes?  What classes use other classes?
+
+Behaviour - how does the state of the system change over time?  What events 
+    cause changes in state?  How does the flow of control (or multiple flows
+    of control) move through the structure?  How are conflicts between 
+    intersecting simultaneous flows of control arbitrated?
+
+Design = what is the intended design of the program.  This is reflected 
+    in the comments.  What concepts are used, and defined by the design.
+    The concepts provide the vocabulary (more generally, the ontology)
+    that let's you talk about the program.  If you don't have the vocabulary
+    you can't express the design, or do the implementation.
+
+As-built - what is the actual implementation of the program.  How does
+    this differ from the design?
+
+Good design principles:
+
+Components (classes, objects) should do one thing well, and completely,
+using an interface that hides implementation detail as much as possible.
+
+Subclasses should preserve the behaviour of their ancestor classes. (Liskov
+Principle of Substitution).
+
+Be as general as possible, but not too general.
+
+Be permissive in what you expect from users, and rigorous in what you 
+generate. 
+
+Design Principles are by nature fuzzy and flexible.  But they help you
+provide the rationale for the design.
+
+Let's do this by looking at calculator.py
+
+We start broad, looking at main.  
+
+Everything revolves around calc.Evaluate(s, var_dict)
+
+This identifies a Calculator object.  It's ad hoc, since it is clearly
+designed just for this program.
+
+Shallow view of the object, i.e. interface plus some instance variables.
+
+class Calculator():
+    constructors:
+        Calculator()
+
+    instance variables:
+        parser --> an instance of ExprParser()
+        op_to_fn
+        fn_to_op
+
+    instance methods
+        evaluate(self, expr_str)
+        evaluate(self, expr_str, var_dict=None)
+
+        evaluate_ast(self, ast, var_dict)
+
+Deeper into evaluate().
+
+Observe some magic parsing associated with an ExprParser object, which
+returns an abstract syntax tree (AST).  To understand the AST we need
+to delve into ExprParser.  But we have a description, so can ignore the
+parser details.  
+
+Then look at evaluate_ast. But we need to know what a ValueTree, the
+output of the parser looks like.
+
+Divert for a shallow look at the tree hierarchy, taking away the
+get_children, get_value methods as all we need to worry about.
+And noting the concept of tree shape.
+
+Back to AST evaluate
+
+Observations:
+- this is an interpreter, that is, once the abstract syntax tree is 
+extracted from the parse, we don't do any further manipulation before
+evaluating it.  In contrast to a compiler where we would produce "code"
+from the AST.
+
+* Trees *
+
+class BasicTree
+    constructors:
+        BasicTree()
+        BasicTree(children)
+
+    instance vars:
+        _children []
+
+    instance methods:
+        get_children(self)
+        set_children(self, children)
+        check_children(self, children)
+
+        tree_to_shape(self)
+
+    class methods:
+        shape_to_tree(cls, shape):
+
+  ^
+  |
+class ValueTree(BasicTree)
+    constructors:
+        ValueTree()
+        ValueTree(value)
+        ValueTree(value, children)
+
+    instance vars:
+        _value
+
+    instance methods:
+        get_value(self)
+        set_value(self, value)
+
+        tree_to_valshape(self)
+
+    class methods:
+        valshape_to_tree(cls, vshape)
+
+  ^
+  |
+class ExprTree(ValueTree)
+    constructors:
+        ExprTree()
+        ExprTree(value)
+        ExprTree(value, children)
+
+    instance methods:
+        evaluate(self)
+
+
+* Parsers *
+
+class ValueParser()
+    constructors:
+        ValueParser(lexer, yacc, error_stack)
+
+    instance variables:
+        lexer
+        yacc
+        error_stack
+
+    instance methods:
+        parse(self, input_str)
+        unparse(self, ast)  (default)
+
+  ^
+  |
+ExprParser(ValueParser)
+    constructors:
+        ExprParser(lexer, yacc, error_stack)
+
+    instance methods:
+        parse(self, input_str)
+        unparse(self, ast)  (override)
+
+
+Design question - where does the unparsing service belong?

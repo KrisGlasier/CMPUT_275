@@ -1,0 +1,7 @@
+Previous morning problem - enhanced binary search solutions
+
+A bit more on expression trees
+    - testing if two trees are the same
+    - simplifying common expressions
+
+Getting the arduino serial port to work with python.

@@ -1,0 +1,29 @@
+graph g {
+  ordering=out;
+  node [shape=ellipse, style=filled, color=grey];
+  edge [style="setlinewidth(3)"];
+0 ;
+1 ;
+2 ;
+3 ;
+4 ;
+5 ;
+6 ;
+7 ;
+8 ;
+9 ;
+5 -- 7 ;
+3 -- 6 ;
+4 -- 5 ;
+3 -- 5 ;
+8 -- 2 ;
+9 -- 6 ;
+0 -- 5 ;
+9 -- 3 ;
+9 -- 5 ;
+2 -- 3 ;
+4 -- 7 ;
+0 -- 3 ;
+2 -- 7 ;
+
+}

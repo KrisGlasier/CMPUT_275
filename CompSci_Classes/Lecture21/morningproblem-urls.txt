@@ -1,0 +1,12 @@
+http://pastebin.com/9B5YLvjg
+http://pastebin.com/eQEit3WE
+http://pastebin.com/bmihSQyQ
+http://pastebin.com/r4Vu7fSs
+http://pastebin.com/NShMGFfK
+http://pastebin.com/e2Azf0XE
+http://pastebin.com/UcqKVN1P
+http://pastebin.com/MwCkkjiL
+http://pastebin.com/wjyaCrkW
+# add you code here t = int(input()) speed = input().split() #print(speed) position = [] for x in range(len(speed)): speed[x]= int(speed[x]) position.append(x + t*speed[x]) # print(speed) # print(position) count = 0 for i in range(len(speed)): for j in range(len(speed)): if i < j and position[i] > position[j]: count += 1 print(count)
+http://pastebin.com/pW9endxq
+http://pastebin.com/YPbFfpR6

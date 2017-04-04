@@ -1,0 +1,263 @@
+Object-Oriented design
+Cmput 275 
+2017-03-01
+
+We have examples of creating classes in python (the graph class of
+Assignment 1 Part 1). We also have examples of NOT creating classes,
+and instead using the basic features of the programming language
+directly. E.g.. a graph was two sets V and E, and we defined some
+useful functions on them.
+
+This latter approach is good for quick and dirty solutions, but it
+causes problems in two main ways:
+
+- it's difficult to have multiple instances of the thing we are working
+with. You need to keep track of collections of related data (the E and
+V). Although you can put them together into a container
+
+    G = (V, E) 
+
+if you need additional data (like the global cache of neighbours we used
+to speed up our algorithm), then it also has to be dragged around. And
+it exposes it to the outside world.
+
+- if we change anything about the implementation of our thing, we have
+to change all the code that uses the thing. Again, think of the graph
+with the neighbour cache. We now might define G as
+
+    G = (V, E, aux)
+
+where aux contains auxiliary data. We might have to change code
+wherever we reference G.
+
+Thus the main utility of Object-Orientation is to encapsulate related
+data behind a well-defined interface.
+
+Encapsulation - means that all the data related to the thing is
+contained in the object
+
+Interface - the object can only be manipulated by using, mainly, methods
+of the object.
+
+Some basic Object-Oriented-Programming (OOP) terminology
+
+The things we manipulate are Objects. Objects have
+
+State  - All the object's attributes and their current values.
+
+Behaviour - How the object acts and reacts as it processes messages and
+changes state.
+
+Identity - The object can be distinguished from other objects, by a
+specific identifier, or by its other attributes.
+
+Objects have:
+
+Instance Variables/Attributes - which is where state is stored
+    The interface provides Accessors to the instance variables.
+    Typically they are called get and set.  Set can change the
+    state, and is thus an example of a Mutator. 
+
+Instance Methods/Functions - which are used to change the state of the
+object methods are called or invoked.  
+
+If o is an object, and m is instance method of o, then you invoke
+m by 
+    o.m(args, ...)
+But the definition of m will be like this:
+    def m(self, args, ...
+and the object o is passed as the first argument (self).
+
+Objects belong to Classes, which are themselves Objects, so classes also
+have variables and methods, in which case they are called
+
+    Class Variables - e.g. next object sequence number
+    Class Methods - eg. new, destroy
+
+Objects are created with a Constructor, and dismantled with a 
+Destructor.  The destructor may be invoked automatically by the garbage
+collector when the object is no longer needed.
+
+Each class occurs only once, but there are many instances of objects
+that belong to the class.
+
+In Python, the Type of an objects, type(x), is the class that x is an
+instance of. When object x is an instance of class C, we say
+
+    x is-a C
+
+The collection of methods and exposed data that are used to work with a
+class and its objects is called the Interface to the class.
+
+Instance variables are themselves objects (in Python). When an object A
+contains and object B as an instance variable, we say
+
+    A has-a B.
+
+Now, let's make these notions solid by re-visiting expression trees.
+
+
+Trees in general.
+- expression trees
+- taxonomy trees
+- heap trees
+- search trees
+- traversals of trees
+- spanning trees
+
+So we begin by asking what the most basic form a tree can be.  Defining
+it recursively we could say that
+
+Base case:
+    Tree() is the simplest Tree, called the empty-tree
+
+Inductive construction of a new Tree:
+    If t0, t1, ..., tn are instances of Tree, then
+        Tree( [t0, t1, ..., tn] )
+    is a Tree, with children t0, t1, t2, ..., tn
+        
+
+So we can only build up trees by starting with some empty trees and
+joining them together.
+
+Let's define such a class, called a BasicTree,
+see basictree.py, basic_test.py
+
+It's kind of useless, we need to at least associate a value with 
+a tree, and thus by the inductive construction a value with every
+node in the tree.
+
+Base case:
+    Let v be some value.
+    Tree(v) is the simplest Tree, it has value v, and is called
+    a leaf.  If v is None we can say it is the empty tree.
+
+Inductive construction of a new Tree:
+    If v is some value, and t0, t1, ..., tn are instances of Tree, then
+        Tree(v, [t0, t1, ..., tn] )
+    is a Tree, with value v and children t0, t1, t2, ..., tn
+        
+Let's define such a class, called a ValueTree,
+see valuetree_orig.py, value_test.py
+
+Now, let's go back to BasicTtree and add some accessor methods
+    get_children()
+    set_children(children)
+So that we can walk the tree, and also modify it.
+
+Inheritance
+
+One thing you notice when building ValueTree is that a ValueTree is just
+like a BasicTree, but has some additional state and behaviour.  In this
+sense:
+     a ValueTree behaves-like-a BasicTree with respect to 
+     BasicTree behaviour
+That is, where ever we had an algorithm that operated with BasicTree, it 
+should operate exactly the same when using ValueTree.  Or said another
+way, noting in the interface and behaviour of ValueTree should violate
+BasicTree-ness.
+
+So we would like to reuse all the state and behaviour of BasicTree, and
+add some new state and behaviour. Plus we would like to have this reuse
+extensible, in the sense that if we add behaviour to BasicTree, such as
+with new methods, we would like to get this for free in ValueTree.
+
+This is sometimes accomplished via the OOP notion of inheritance. That
+is, we can implement behaves-like-a by using is-a. We take an existing
+class C and extended it to get a new class D. D is-a C, C is a Parent
+Class (or Superclass, or Base Class) of D, and D is a Derived Class (or
+Subclass) of C.
+
+Other times behaves-like-a is is accomplished by building a wrapper
+around an existing object, so that class D has-a class C member, and we
+give class D the same interface as class C plus some more.
+
+So let's revisit the definition of ValueTree.
+
+Observations:
+- named parameters are very convenient for delegating behaviour, and 
+when we don't know the class we are working on.  The named parameters let
+us deal with re-ordering of parameters if required.
+
+Now, we can add behaviour to BasicTree that ValueTree will get for free.
+We have to be careful to be general about it in cases where we are
+constructing new instances.
+
+New instance method:
+
+get_shape() - returns a list that reflects the shape of the tree.  It only
+uses information of the BasicTree, and even goes through accessors to get
+to the children.
+
+New class method:
+
+list_to_tree(l) - takes a list defining a tree shape, and constructs a 
+tree with that shape.  Here we need to be careful to construct the right
+class of tree, and so use the class parameter (Cls) passed to the 
+constructor.  Note classes start with capital letters by convention, so
+we start our class parameter the same way.
+
+The get_shape() and list_to_tree() methods are inverses of each other.
+This means you can make a copy of a BasicTree tree, called orig, by
+    copy = BasicTree.list_to_tree(orig.get_shape())
+
+Now, you can call a class method via an object, and this way invoke
+the same class as your original object.  That is,
+    copy = orig.list_to_tree(orig.get_shape())
+
+This is actually the preferred way to do this if you want to copy to
+have the same structure and type as the original.  You can then go over
+the copy and fix any attributes.
+
+Now our ValueTree gets these new functions for no extra coding work
+from us.  Look at the output of
+    pydoc3 valuetree
+It shows which methods come from which class ancestor.
+
+What about traversing the tree?  Should we build some standard methods into
+BasicTree.  Maybe, but not to start.  A traversal is so easy to write, that
+we should work with the existing interface until we get more experience.
+
+Expression Trees
+
+Let's return to expression trees. The most general kind of expression
+tree is one where:
+
+    leaf nodes - have a value that is a variable name or a number
+
+    internal nodes - have a value that is a function, which takes its
+        list of children as its arguments.
+
+So, it is pretty clear that expression trees are like ValueTrees, with
+just a special interpretation of values stored in the tree. The
+restrictions on the values have no real relation to the structure of the
+tree, so we can argue that an ExprTree behaves-like-a ValueTree. We want
+to extend it with the features that we need for working with
+expressions.
+
+So an ExprTree is-a ValueTree is-a BasicTree
+
+We will add the following method to an ExprTree
+    evaluate
+which will evaluate the expression tree.  But it's a bit tricky, since
+the values of internal nodes have to be functions, not strings '+' or '*'
+
+def op_plus(x, y):
+    return x + y
+
+def op_times(x, y):
+    return x * y
+
+So the tree for 3 + 4 is created like this:
+
+t = ExprTree( op_plus, [ ExprTree(3), ExprTree(4) ] )
+
+To actually use expression trees conveniently, we need to be able to
+convert a string like "(1+2) * (3+4)" into a ExprTree.  These examples
+include a parser that produces an expression list:
+    [ '*', [ '+', 1, 2] [ '+', 3, 4 ] ]
+which can then be converted into a ExprTree.
+
+See the code in expr_test.py.
+
+This code provides the framework for converting 

@@ -1,0 +1,138 @@
+Object-Oriented design
+
+We have examples of creating classes in python (the graph class of
+Assignment 1 Part 1). We also have examples of NOT creating classes,
+and instead using the basic features of the programming language
+directly. E.g.. a graph was two sets V and E, and we defined some useful
+functions on them.
+
+This latter approach is good for quick and dirty solutions, but it
+causes problems in two main ways:
+
+- it's difficult to have multiple instances of the thing we are working
+with. You need to keep track of collections of related data (the E and
+V). Although you can put them together into a container 
+
+    G = (V, E) 
+
+if you need additional data (like the global cache of neighbours we used
+to speed up our algorithm), then it also has to be dragged around. And
+it exposes it to the outside world.
+
+- if we change anything about the implementation of our thing, we have
+to change all the code that uses the thing. Again, think of the graph
+with the neighbour cache. We now might define G as
+
+    G = (V, E, aux)
+
+where aux contains auxiliary data. We might have to change code
+wherever we reference G.
+
+Thus the main utility of Object-Orientation is to encapsulate related
+data behind a well-defined interface.
+
+Encapsulation - means that all the data related to the thing is
+contained in the object
+
+Interface - the object can only be manipulated by using, mainly, methods
+of the object.
+
+Some basic Object-Oriented-Programming (OOP) terminology
+
+The things we manipulate are Objects. Objects have
+
+State  - All the object's attributes and their current values.
+
+Behaviour - How the object acts and reacts as it processes messages and
+changes state.
+
+Identity - The object can be distinguished from other objects, by a
+specific identifier, or by its other attributes.
+
+Objects have:
+
+Instance Variables/Attributes - which is where state is stored
+    The interface provides Accessors to the instance variables.
+    Typically they are called get and set.  Set can change the
+    state, and is thus an example of a Mutator. 
+
+Instance Methods/Functions - which are used to change the state of the
+object methods are called or invoked.  
+
+If o is an object, and m is instance method of o, then you invoke
+m by 
+    o.m(args, ...)
+But the definition of m will be like this:
+    def m(self, args, ...
+and the object o is passed as the first argument (self).
+
+Objects belong to Classes, which are themselves Objects, so classes also
+have variables and methods, in which case they are called
+
+    Class Variables - e.g. next object sequence number
+    Class Methods - eg. new, destroy
+
+Objects are created with a Constructor, and dismantled with a 
+Destructor.  The destructor may be invoked automatically by the garbage
+collector when the object is no longer needed.
+
+Each class occurs only once, but there are many instances of objects
+that belong to the class.
+
+In Python, the Type of an objects, type(x), is the class that x is an
+instance of. When object x is an instance of class C, we say
+
+    x is-a C
+
+The collection of methods and exposed data that are used to work with a
+class and its objects is called the Interface to the class.
+
+Instance variables are themselves objects (in Python). When an object A
+contains and object B as an instance variable, we say
+
+    A has-a B.
+
+Now, let's make these notions solid by re-visiting expression trees.
+
+
+Trees in general.
+- expression trees
+- taxonomy trees
+- heap trees
+- search trees
+- traversals of trees
+- spanning trees
+
+So we begin by asking what the most basic form a tree can be.  Defining
+it recursively we could say that
+
+Base case:
+    Tree() is the simplest Tree, called the empty-tree
+
+Inductive construction of a new Tree:
+    If t0, t1, ..., tn are instances of Tree, then
+        Tree( [t0, t1, ..., tn] )
+    is a Tree, with chidren t0, t1, t2, ..., tn
+        
+
+So we can only build up trees by starting with some empty trees and
+joining them together.
+
+Let's define such a class, called Tree
+see tree_1.py, tree_test_1.py
+
+It's kind of useless, we need to at least associate a value with 
+a tree, and thus by the inductive consruction a value with every
+node in the tree.
+
+
+Base case:
+    Let v be some value.
+    Tree(v) is the simplest Tree, it has value v, and is called
+    a leaf.  If v is None we can say it is the empty tree.
+
+Inductive construction of a new Tree:
+    If v is some value, and t0, t1, ..., tn are instances of Tree, then
+        Tree(v, [t0, t1, ..., tn] )
+    is a Tree, with value v and chidren t0, t1, t2, ..., tn
+        

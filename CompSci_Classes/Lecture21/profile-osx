@@ -1,0 +1,3 @@
+# source this file to set up short aliases to profile and pstats programs
+alias profile='python3 /Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/profile.py'
+alias pstats='python3 /Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/pstats.py'
